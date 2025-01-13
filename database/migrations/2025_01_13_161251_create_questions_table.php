@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('body');
             $table->integer('viewCount')->default(0);
             $table->integer('score')->default(0);
+            $table->json('tags')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
