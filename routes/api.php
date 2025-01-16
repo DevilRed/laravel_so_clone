@@ -18,6 +18,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::controller(UserController::class)->group(function () {
-    Route::post('register', 'store');
-    Route::post('login', 'auth');
+    Route::post('user/register', 'store')->name('users.register');
+    Route::post('user/login', 'auth');
 });

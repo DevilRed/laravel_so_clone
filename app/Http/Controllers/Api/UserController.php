@@ -21,8 +21,8 @@ class UserController extends Controller
             $data = $request->validated();
             $data['password'] = bcrypt($data['password']);
             User::create($data);
-            return response()->json([
-                'message' => 'User created successfully'
+            return response()->json(['message' => 'User created successfully',
+                'status' => 201
             ]);
         }
     }
