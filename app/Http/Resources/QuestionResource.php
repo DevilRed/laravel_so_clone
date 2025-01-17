@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class QuestionResource extends JsonResource
 {
@@ -14,6 +15,20 @@ class QuestionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'body' => $this->body,
+            'viewCount' => $this->viewCount . ' ' . Str::plural("view", $this->viewCount),
+            'score' =>
+            $this->score . ' ' . Str::plural("vote", $this->score),
+            'answerCount' => $this->answers()->count() . ' ' . Str::plural("answer", $this->answers()->count()),
+            // load answers if they are available
+            'answers' => AnswerResource::collection($this->whenLoaded('answers')),
+            'created_at' => $this->created_at->diffForHumans(),
+            'user' => UserResource::make($this->whenLoaded('user')),
+            'tags' => $this->tags
+        ];
     }
 }
