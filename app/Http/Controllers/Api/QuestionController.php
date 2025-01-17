@@ -93,14 +93,21 @@ class QuestionController extends Controller
      */
     public function update(UpdateQuestionRequest $request, Question $question)
     {
-        $data = $request->validated();
-        $data['slug'] = Str::slug($data['title']);
-        $data['tags'] = $data['tags'];
-        $question->update($data);
-        return QuestionResource::make($question)->additional([
-            'message' => 'Question updated successfully',
-            'user' => UserResource::make($question->user())
-        ]);
+        if ($request->user()->cannot('update', $question)) {
+            return response()->json([
+                'error' => 'You are not authorized to update this question',
+                'user' => UserResource::make($request->user())
+            ]);
+        } else {
+            $data = $request->validated();
+            $data['slug'] = Str::slug($data['title']);
+            $data['tags'] = $data['tags'];
+            $question->update($data);
+            return QuestionResource::make($question)->additional([
+                'message' => 'Question updated successfully',
+                'user' => UserResource::make($question->user())
+            ]);
+        }
     }
 
     /**
@@ -108,11 +115,18 @@ class QuestionController extends Controller
      */
     public function destroy(Request $request, Question $question)
     {
-        $question->delete();
-        return response()->json([
-            'message' => 'Question deleted successfully',
-            'user' => UserResource::make($request->user())
-        ]);
+        if ($request->user()->cannot('update', $question)) {
+            return response()->json([
+                'error' => 'You are not authorized to delete this question',
+                'user' => UserResource::make($request->user())
+            ]);
+        } else {
+            $question->delete();
+            return response()->json([
+                'message' => 'Question deleted successfully',
+                'user' => UserResource::make($request->user())
+            ]);
+        }
     }
 
     /**
