@@ -34,5 +34,5 @@ Route::controller(QuestionController::class)->group(function () {
     Route::get('questions', 'index');
     Route::get('question/{question}/show', 'show');
     Route::get('tag/{tag}/questions', 'questionByTag');
-    Route::get('user/questions', 'questionsByUser');
+    Route::post('user/questions', 'questionsByUser');
 });

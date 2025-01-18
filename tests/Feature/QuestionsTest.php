@@ -6,20 +6,23 @@ use App\Models\User;
 
 
 // Instead of beforeAll, use the Dataset approach
-dataset('user', function () {
+//dataset('user', function () {
+beforeEach(function () {
     $user = User::factory()->create([
         'email' => 'test@example.com',
         'password' => Hash::make('password'),
     ]);
 
-    Question::factory()
+    $questions = Question::factory()
         ->count(5)
         ->state([
             'user_id' => $user->id
         ])
         ->create();
 
-    return $user;
+    // Store in test instance
+    $this->user = $user;
+    $this->questions = $questions;
 });
 
 describe('unauthenticated routes', function () {
@@ -28,5 +31,19 @@ describe('unauthenticated routes', function () {
         $response = $this->get('/api/questions');
         $response->assertStatus(200);
         expect(count(json_decode($response->content(), true)))->toBe(3);
+    });
+
+    it('shows a single question', function () {
+        $response = $this->get('/api/question/' . $this->questions[0]->slug . '/show');
+        $response->assertStatus(200);
+        expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
+    });
+
+    it('questions by user', function () {
+        $response = $this->post('/api/user/questions', [
+            'user_id' => $this->user->id
+        ]);
+        $response->assertStatus(200);
+        expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
     });
 });
