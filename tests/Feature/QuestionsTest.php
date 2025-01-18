@@ -39,10 +39,18 @@ describe('unauthenticated routes', function () {
         expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
     });
 
-    it('questions by user', function () {
+    it('get questions by given user', function () {
         $response = $this->post('/api/user/questions', [
             'user_id' => $this->user->id
         ]);
+        $response->assertStatus(200);
+        expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
+    });
+
+    it('get questions of logged in user', function () {
+        $this->withoutExceptionHandling();
+        $this->actingAs($this->user);
+        $response = $this->get('/api/user/questions');
         $response->assertStatus(200);
         expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
     });

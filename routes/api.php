@@ -17,7 +17,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('update/password', 'updateUserPassword');
     });
     Route::controller(QuestionController::class)->group(function () {
-        Route::get('user/questions', 'authUserQuestion');
+        // logged in user questions
+        Route::get('user/questions', 'authUserQuestions');
         Route::post('question/store', 'store');
         Route::put('update/{question}/question', 'update');
         Route::delete('deletequestion}/question', 'destroy');
