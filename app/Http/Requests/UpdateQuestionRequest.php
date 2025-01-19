@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateQuestionRequest extends FormRequest
 {
@@ -22,8 +23,9 @@ class UpdateQuestionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255', 'unique:questions', 'title' . $this->question->id],
+            'title' => ['required', 'string', 'max:255', Rule::unique('questions')->ignore($this->question->id)],
             'body' => ['required'],
+            'tags' => ['nullable', 'string']
         ];
     }
 }

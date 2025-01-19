@@ -76,4 +76,36 @@ describe('auth routes', function () {
                 'message'
             ]);
     });
+
+    it('update question', function () {
+        $this->withoutExceptionHandling();
+        $question = $this->questions[0]->load('user');
+        $url = "/api/update/{$question->slug}/question";
+
+        $response = $this->put($url, [
+            'title' => 'titleUpdated',
+            'body' => 'bodyUpdated',
+            'tags' => 'again'
+        ]);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'title',
+                    'body',
+                    'tags',
+                    'slug'
+                ],
+                'message',
+                'user'
+            ]);
+
+        // Assert the database was updated
+        $this->assertDatabaseHas('questions', [
+            'id' => $question->id,
+            'title' => 'titleUpdated',
+            'body' => 'bodyUpdated',
+            'tags' => 'again'
+        ]);
+    });
 });

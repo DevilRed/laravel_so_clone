@@ -101,11 +101,11 @@ class QuestionController extends Controller
         } else {
             $data = $request->validated();
             $data['slug'] = Str::slug($data['title']);
-            $data['tags'] = $data['tags'];
+            $data['tags'] = $data['tags'] ?? $question->tags;
             $question->update($data);
             return QuestionResource::make($question)->additional([
                 'message' => 'Question updated successfully',
-                'user' => UserResource::make($question->user())
+                'user' => UserResource::make($request->user())
             ]);
         }
     }
