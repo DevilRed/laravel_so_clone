@@ -46,12 +46,34 @@ describe('unauthenticated routes', function () {
         $response->assertStatus(200);
         expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
     });
+});
 
-    it('get questions of logged in user', function () {
+describe('auth routes', function () {
+    beforeEach(function () {
         $this->withoutExceptionHandling();
         $this->actingAs($this->user);
+    });
+    it('get questions of logged in user', function () {
         $response = $this->get('/api/user/questions');
         $response->assertStatus(200);
         expect(count(json_decode($response->content(), true)))->not()->toBeEmpty();
+    });
+
+    it('store question', function () {
+        $response = $this->post('/api/question/store', [
+            'title' => 'title',
+            'body' => 'body',
+            'tags' => 'lala,jojo'
+        ]);
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'title',
+                    'body',
+                    'slug'
+                ],
+                'message'
+            ]);
     });
 });

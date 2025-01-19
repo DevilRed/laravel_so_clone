@@ -80,7 +80,7 @@ class QuestionController extends Controller
         $data = $request->validated();
         // add slug, tags since they are not required in the request
         $data['slug'] = Str::slug($data['title']);
-        $data['tags'] = $data['tags'];
+        $data['tags'] = $data['tags'] ?? null;
         // use association go create the question
         $question = $request->user()->questions()->create($data);
         return QuestionResource::make($question)->additional([

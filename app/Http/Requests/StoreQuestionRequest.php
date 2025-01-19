@@ -24,6 +24,7 @@ class StoreQuestionRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255', 'unique:questions'],
             'body' => ['required'],
+            'tags' => ['nullable', 'string']
         ];
     }
 }
