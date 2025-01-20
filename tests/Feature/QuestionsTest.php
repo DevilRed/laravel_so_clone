@@ -142,6 +142,24 @@ describe('auth routes', function () {
         $netVotes = $question->votes()->where('type', 'up')->count() - $question->votes()->where('type', 'down')->count();
         $this->assertEquals(0, $netVotes);
     });
+
+    it('voting twice for same question is forbidden', function () {
+        $question = $this->questions[0];
+        $urlUp = "/api/vote/{$question->slug}/up/question";
+        $urlDown = "/api/vote/{$question->slug}/down/question";
+        $user1 = User::factory()->create([
+            'email' => 'user`@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        $this->actingAs($user1);
+        $response1 = $this->put($urlUp);
+        $response2 = $this->put($urlUp);
+        $response2->assertStatus(400);
+
+        $response3 = $this->put($urlDown);
+        $response4 = $this->put($urlDown);
+        $response4->assertStatus(400);
+    });
 });
 
 describe('forbidden unauthorized access', function () {
