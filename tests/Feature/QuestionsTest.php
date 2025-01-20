@@ -112,12 +112,35 @@ describe('auth routes', function () {
         $question = $this->questions[0];
         $url = "/api/delete/{$question->slug}/question";
 
-        $response = $this->delete($url, [
-            'title' => 'titleUpdated',
-            'body' => 'bodyUpdated',
-            'tags' => 'again'
-        ]);
+        $response = $this->delete($url);
         $response->assertStatus(200);
+    });
+    it('stores and calculates votes dynamically', function () {
+        $question = $this->questions[0];
+        $urlUp = "/api/vote/{$question->slug}/up/question";
+        $urlDown = "/api/vote/{$question->slug}/down/question";
+
+        // User 1 votes up
+        $user1 = User::factory()->create([
+            'email' => 'user`@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        $response = $this->actingAs($user1)->put($urlUp);
+        $response->assertStatus(200);
+        $this->assertEquals(1, $question->votes()->where('type', 'up')->count());
+
+        // User 2 votes down
+        $user2 = User::factory()->create([
+            'email' => 'user2`@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        $response = $this->actingAs($user2)->put($urlDown);
+        $response->assertStatus(200);
+        $this->assertEquals(1, $question->votes()->where('type', 'down')->count());
+
+        // Check net votes
+        $netVotes = $question->votes()->where('type', 'up')->count() - $question->votes()->where('type', 'down')->count();
+        $this->assertEquals(0, $netVotes);
     });
 });
 

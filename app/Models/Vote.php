@@ -13,6 +13,7 @@ class Vote extends Model
         'votable_id',
         'votable_type',
         'user_id',
+        'type'
     ];
 
     public function votable(): MorphTo

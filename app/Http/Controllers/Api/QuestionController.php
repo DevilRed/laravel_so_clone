@@ -134,32 +134,37 @@ class QuestionController extends Controller
      */
     public function vote(Request $request, Question $question, $type)
     {
+        // Validate the vote type
+        if (!in_array($type, ['up', 'down'])) {
+            return response()->json([
+                'error' => 'Invalid vote type',
+            ], 400);
+        }
         // check if user already voted for the question
-        $votes = Vote::whereHasMorph('votable', [Question::class], function (Builder $query) use ($question) {
-            $query->where('votable_id', $question->id);
-        })->where('user_id', $request->user()->id)->get();
-        if ($votes->count() > 0) {
+        $existingVote = $question->votes()
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if ($existingVote) {
             return response()->json([
                 'error' => 'You already voted for this question',
                 'user' => UserResource::make($request->user())
-            ]);
-        } else {
-            if ($type == 'up') {
-                $question->increment('votes');
-            } else {
-                $question->decrement('votes');
-            }
-            // prepare the query first ("make" handles that) to store the vote
-            $vote = Vote::make([
-                'user_id' => $request->user()->id,
-            ]);
-            // save the vote
-            $question->votes()->save($vote);
-            // other way to save the vote
-            // $vote->votable()->associate($question)->save();
+            ], 400);
         }
+        $vote = new Vote([
+            'user_id' => $request->user()->id,
+            'type' => $type,
+        ]);
+        $question->votes()->save($vote);
+
+        // Dynamically calculate the total votes
+        $upVotes = $question->votes()->where('type', 'up')->count();
+        $downVotes = $question->votes()->where('type', 'down')->count();
+        $netVotes = $upVotes - $downVotes;
+
         return QuestionResource::make($question->load(['answers', 'user']))->additional([
             'message' => 'Vote added successfully',
+            'votes_count' => $netVotes,
         ]);
     }
 }
