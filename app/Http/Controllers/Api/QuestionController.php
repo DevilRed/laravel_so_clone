@@ -119,7 +119,7 @@ class QuestionController extends Controller
             return response()->json([
                 'error' => 'You are not authorized to delete this question',
                 'user' => UserResource::make($request->user())
-            ]);
+            ], 403);
         } else {
             $question->delete();
             return response()->json([

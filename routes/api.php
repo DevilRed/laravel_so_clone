@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('user/questions', 'authUserQuestions');
         Route::post('question/store', 'store');
         Route::put('update/{question}/question', 'update');
-        Route::delete('deletequestion}/question', 'destroy');
+        Route::delete('delete/{question}/question', 'destroy');
         Route::put('vote/{question}/{type}/question', 'vote');
         //Route::put('votedown/{question}/{type}/question', 'vote');
     });

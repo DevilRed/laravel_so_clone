@@ -108,6 +108,17 @@ describe('auth routes', function () {
             'tags' => 'again'
         ]);
     });
+    it('delete question', function () {
+        $question = $this->questions[0];
+        $url = "/api/delete/{$question->slug}/question";
+
+        $response = $this->delete($url, [
+            'title' => 'titleUpdated',
+            'body' => 'bodyUpdated',
+            'tags' => 'again'
+        ]);
+        $response->assertStatus(200);
+    });
 });
 
 describe('forbidden unauthorized access', function () {
@@ -121,6 +132,22 @@ describe('forbidden unauthorized access', function () {
         $url = "/api/update/{$question->slug}/question";
 
         $response = $this->put($url, [
+            'title' => 'titleUpdated',
+            'body' => 'bodyUpdated',
+            'tags' => 'again'
+        ]);
+        $response->assertStatus(403);
+    });
+    it('delete question is forbidden for unauthorized users', function () {
+        $user = User::factory()->create([
+            'email' => 'test2@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        $this->actingAs($user);
+        $question = $this->questions[0];
+        $url = "/api/delete/{$question->slug}/question";
+
+        $response = $this->delete($url, [
             'title' => 'titleUpdated',
             'body' => 'bodyUpdated',
             'tags' => 'again'
