@@ -50,7 +50,7 @@ describe('unauthenticated routes', function () {
 
 describe('auth routes', function () {
     beforeEach(function () {
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
         $this->actingAs($this->user);
     });
     it('get questions of logged in user', function () {
@@ -107,5 +107,24 @@ describe('auth routes', function () {
             'body' => 'bodyUpdated',
             'tags' => 'again'
         ]);
+    });
+});
+
+describe('forbidden unauthorized access', function () {
+    it('forbidden access unauthorized updates', function () {
+        $user = User::factory()->create([
+            'email' => 'test2@example.com',
+            'password' => Hash::make('password'),
+        ]);
+        $this->actingAs($user);
+        $question = $this->questions[0];
+        $url = "/api/update/{$question->slug}/question";
+
+        $response = $this->put($url, [
+            'title' => 'titleUpdated',
+            'body' => 'bodyUpdated',
+            'tags' => 'again'
+        ]);
+        $response->assertStatus(403);
     });
 });

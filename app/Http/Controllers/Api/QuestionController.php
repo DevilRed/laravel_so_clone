@@ -97,7 +97,7 @@ class QuestionController extends Controller
             return response()->json([
                 'error' => 'You are not authorized to update this question',
                 'user' => UserResource::make($request->user())
-            ]);
+            ], 403);
         } else {
             $data = $request->validated();
             $data['slug'] = Str::slug($data['title']);
