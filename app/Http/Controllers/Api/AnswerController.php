@@ -44,8 +44,7 @@ class AnswerController extends Controller
     public function update(UpdateAnswerRequest $request, Question $question, Answer $answer)
     {
         if ($request->user()->cannot('update', $answer)) {
-            return response()->json([
-                'error' => 'You are not authorized to update this question',
+            return response()->json(['error' => 'You are not authorized to update this answer',
             ], 403);
         } else {
             $data = $request->validated();
