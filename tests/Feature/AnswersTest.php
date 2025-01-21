@@ -60,4 +60,27 @@ describe('auth answer routes', function () {
 
         $response->assertStatus(200);
     });
+
+    it('should return forbidden for non owner user when deleting an answer', function () {
+        $this->actingAs($this->user);
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = '/api/delete/' . $question->slug . '/' . $answer->id . '/answer';
+        $response = $this->delete($url, [
+            'body' => 'updated answer',
+        ]);
+
+        $response->assertStatus(403);
+    });
+    it('should return successfull response when deleting an answer for user who owns the answer', function () {
+        $this->actingAs($this->user2);
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = '/api/delete/' . $question->slug . '/' . $answer->id . '/answer';
+        $response = $this->delete($url, [
+            'body' => 'updated answer',
+        ]);
+
+        $response->assertStatus(200);
+    });
 });
