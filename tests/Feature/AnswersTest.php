@@ -83,4 +83,32 @@ describe('auth answer routes', function () {
 
         $response->assertStatus(200);
     });
+    it('should vote for an answer', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $urlUp = "/api/vote/{$answer->id}/up/answer";
+        $urlDown = "/api/vote/{$answer->id}/down/answer";
+        // vote up
+        $response = $this->actingAs($this->user2)->put($urlUp);
+
+        $response->assertStatus(200);
+        $this->assertEquals(1, $answer->votes()->where('type', 'up')->count());
+
+        // vote down
+        $user22 = User::factory()->create();
+        $response = $this->actingAs($user22)->put($urlDown);
+        $response->assertStatus(200);
+        $this->assertEquals(1, $answer->votes()->where('type', 'down')->count());
+    });
+    it('should vote for an answer twice is not allowed', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $urlUp = "/api/vote/{$answer->id}/up/answer";
+        $urlDown = "/api/vote/{$answer->id}/down/answer";
+        // vote up
+        $response = $this->actingAs($this->user2)->put($urlUp);
+        // vote again
+        $response = $this->actingAs($this->user2)->put($urlUp);
+        $response->assertStatus(400);
+    });
 });
