@@ -124,4 +124,35 @@ describe('auth answer routes', function () {
             'best_answer' => 1,
         ]);
     });
+    it('should return forbidden when marking answer as best for non owner user', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = "/api/mark/{$answer->id}/best";
+
+        $response = $this->actingAs($this->user2)->put($url);
+        // vote again
+        $response->assertStatus(403);
+    });
+    it('should update best answer', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = "/api/mark/{$answer->id}/best";
+
+        $response = $this->actingAs($this->user)->put($url);
+        // add another answer
+        $urlAdd = '/api/answer/' . $this->questions[0]->slug . '/store';
+        $response = $this->actingAs($this->user)->post($urlAdd, [
+            'body' => 'sample answer',
+        ]);
+        // mark the new answer as best
+        $question->refresh(); // refresh model to reload the relationship
+        $newAnswer = $question->answers->last();
+        $url = "/api/mark/{$newAnswer->id}/best";
+        $response = $this->actingAs($this->user)->put($url);
+        $response->assertStatus(200);
+
+        expect($question->answers()->count())->toBe(2);
+        expect($answer->fresh()->best_answer)->toBe(0);
+        expect($newAnswer->fresh()->best_answer)->toBe(1);
+    });
 });
