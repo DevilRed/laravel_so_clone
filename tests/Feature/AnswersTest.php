@@ -111,4 +111,17 @@ describe('auth answer routes', function () {
         $response = $this->actingAs($this->user2)->put($urlUp);
         $response->assertStatus(400);
     });
+    it('should mark answer as best', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = "/api/mark/{$answer->id}/best";
+
+        $response = $this->actingAs($this->user)->put($url);
+        // vote again
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('answers', [
+            'id' => $answer->id,
+            'best_answer' => 1,
+        ]);
+    });
 });
