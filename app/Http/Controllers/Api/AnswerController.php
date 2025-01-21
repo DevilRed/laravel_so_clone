@@ -130,6 +130,14 @@ class AnswerController extends Controller
         // remove previous best answer if exists
         $prevBestAnswer = Answer::where(['best_answer' => 1, 'question_id' => $answer->question_id])->first();
         if ($prevBestAnswer) {
+            if ($prevBestAnswer->id === $answer->id) {
+                return response()->json(
+                    [
+                        'message' => 'This answer is already marked as best',
+                    ],
+                    200
+                );
+            }
             $prevBestAnswer->best_answer = 0;
             $prevBestAnswer->save();
         }

@@ -155,4 +155,26 @@ describe('auth answer routes', function () {
         expect($answer->fresh()->best_answer)->toBe(0);
         expect($newAnswer->fresh()->best_answer)->toBe(1);
     });
+
+    it('should return not found when marking non-existent answer as best', function () {
+        $url = "/api/mark/999999/best"; // Assuming 999999 is a non-existent answer ID
+
+        $response = $this->actingAs($this->user)->put($url);
+        $response->assertStatus(404);
+    });
+
+    it('should not change best answer if it is already the best', function () {
+        $question = $this->questions[0];
+        $answer = $question->answers->first();
+        $url = "/api/mark/{$answer->id}/best";
+
+        $response = $this->actingAs($this->user)->put($url);
+        $response->assertStatus(200);
+
+        // Mark the same answer as best again
+        $response = $this->actingAs($this->user)->put($url);
+        $response->assertStatus(200);
+
+        expect($answer->fresh()->best_answer)->toBe(1);
+    });
 });
