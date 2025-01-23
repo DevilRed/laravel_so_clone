@@ -21,7 +21,8 @@ class UserController extends Controller
             $data = $request->validated();
             $data['password'] = bcrypt($data['password']);
             User::create($data);
-            return response()->json(['message' => 'User created successfully',
+            return response()->json([
+                'message' => 'User created successfully',
                 'status' => 201
             ]);
         }
@@ -38,7 +39,8 @@ class UserController extends Controller
                 ]);
             } else {
                 return UserResource::make($user)->additional([
-                    'access_token' => $user->createToken('new_user')->plainTextToken
+                    'access_token' => $user->createToken('new_user')->plainTextToken,
+                    'message' => 'Logged in successfully'
                 ]);
             }
         }
