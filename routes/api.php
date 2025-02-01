@@ -43,6 +43,6 @@ Route::controller(UserController::class)->group(function () {
 Route::controller(QuestionController::class)->group(function () {
     Route::get('questions', 'index');
     Route::get('question/{question}/show', 'show');
-    Route::get('tag/{tag}/questions', 'questionByTag');
+    Route::get('tag/{tag}/questions', 'questionsByTag');
     Route::post('user/questions', 'questionsByUser');
 });
