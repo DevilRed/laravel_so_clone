@@ -151,6 +151,11 @@ class QuestionController extends Controller
                 'user' => UserResource::make($request->user())
             ], 400);
         }
+        if ($type == 'up') {
+            $question->increment('score');
+        } else {
+            $question->decrement('score');
+        }
         $vote = new Vote([
             'user_id' => $request->user()->id,
             'type' => $type,
