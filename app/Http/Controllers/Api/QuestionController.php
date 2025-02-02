@@ -66,7 +66,7 @@ class QuestionController extends Controller
     public function show(Question $question)
     {
         if (!$question) {
-            abort(4040);
+            abort(404);
         }
         $question->increment('viewCount');
         return QuestionResource::make($question->load(['answers', 'user']));
@@ -130,7 +130,7 @@ class QuestionController extends Controller
     }
 
     /**
-     * vote for a question, type if up or down
+     * vote for a question, type: up or down
      */
     public function vote(Request $request, Question $question, $type)
     {

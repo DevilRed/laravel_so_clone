@@ -63,7 +63,7 @@ describe('auth routes', function () {
         $response = $this->post('/api/question/store', [
             'title' => 'title',
             'body' => 'body',
-            'tags' => 'lala,jojo'
+            'tags' => ["lala", "jojo"]
         ]);
         $response->assertStatus(201)
             ->assertJsonStructure([
