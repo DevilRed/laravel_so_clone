@@ -33,7 +33,7 @@ class Question extends Model
 
     public function answers()
     {
-        return $this->hasMany(Answer::class);
+        return $this->hasMany(Answer::class)->with('user');
     }
 
     public function votes(): MorphMany
