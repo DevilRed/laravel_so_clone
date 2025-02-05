@@ -95,6 +95,11 @@ class AnswerController extends Controller
                 'error' => 'You already voted for this answer',
             ], 400);
         }
+        if ($type == 'up') {
+            $answer->increment('score');
+        } else {
+            $answer->decrement('score');
+        }
         $vote = new Vote([
             'user_id' => $request->user()->id,
             'type' => $type,
