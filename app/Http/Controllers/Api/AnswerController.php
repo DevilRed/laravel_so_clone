@@ -62,7 +62,7 @@ class AnswerController extends Controller
      */
     public function destroy(Request $request, Question $question, Answer $answer)
     {
-        if ($request->user()->cannot('update', $answer)) {
+        if ($request->user()->cannot('delete', $answer)) {
             return response()->json([
                 'error' => 'Something went wrong',
             ], 403);
