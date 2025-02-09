@@ -10,6 +10,7 @@ use App\Http\Resources\QuestionResource;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Vote;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class AnswerController extends Controller
@@ -31,6 +32,12 @@ class AnswerController extends Controller
     public function store(StoreAnswerRequest $request, Question $question)
     {
         $data = $request->validated();
+        $body = strip_tags($request->body);
+        if (empty($body)) {
+            throw ValidationException::withMessages([
+                'body' => 'The body field is required'
+            ]);
+        }
         $data['question_id'] = $question->id;
         $request->user()->answers()->create($data);
         return QuestionResource::make($question->load(['user', 'answers']))->additional([
@@ -48,6 +55,12 @@ class AnswerController extends Controller
             ], 403);
         } else {
             $data = $request->validated();
+            $body = strip_tags($request->body);
+            if (empty($body)) {
+                throw ValidationException::withMessages([
+                    'body' => 'The body field is required'
+                ]);
+            }
             $data['user_id'] = $request->user()->id;
             $data['question_id'] = $question->id;
             $answer->update($data);

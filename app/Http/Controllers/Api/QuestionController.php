@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class QuestionController extends Controller
 {
@@ -78,6 +79,12 @@ class QuestionController extends Controller
     public function store(StoreQuestionRequest $request)
     {
         $data = $request->validated();
+        $body = strip_tags($request->body);
+        if (empty($body)) {
+            throw ValidationException::withMessages([
+                'body' => 'The body field is required'
+            ]);
+        }
         // add slug, tags since they are not required in the request
         $data['slug'] = Str::slug($data['title']);
         $data['tags'] = $data['tags'] ?? null;
@@ -100,6 +107,12 @@ class QuestionController extends Controller
             ], 403);
         } else {
             $data = $request->validated();
+            $body = strip_tags($request->body);
+            if (empty($body)) {
+                throw ValidationException::withMessages([
+                    'body' => 'The body field is required'
+                ]);
+            }
             $data['slug'] = Str::slug($data['title']);
             $data['tags'] = $data['tags'] ?? $question->tags;
             $question->update($data);
